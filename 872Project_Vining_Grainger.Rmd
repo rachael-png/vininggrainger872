@@ -17,19 +17,33 @@ When you click the **Knit** button a document will be generated that includes bo
 
 ```{r include=FALSE}
 #load packages
+setwd("~/R/vininggrainger872")
+
 install.packages(dplyr)
 library(dplyr)
+library(plyr)
 library(lubridate)
 library(tidyverse)
 library(lubridate)
 library(sf)
 library(mapview)
 library(RColorBrewer)
+library(readxl)
 
 #add in data here
 
-Animal_Operations <- read.csv("~/vininggrainger872/Project folder/Raw Data/Animal_Operation_Permits_.csv")
+Animal_Operations <- read.csv("Project folder/Raw Data/Animal_Operation_Permits_.csv")
 
+
+allplant_data <- read_excel("Project folder/Raw Data/allplant_data.xlsx")
+View(allplant_data)
+
+solar_data <- read_excel("Project folder/Raw Data/solar_data.xlsx")
+View(solar_data)
+
+#refine and combine data
+
+solar_plants_NC <- left_join(solar_data, allplant_data)
 
 
 ```
