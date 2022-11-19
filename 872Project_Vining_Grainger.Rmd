@@ -1,0 +1,80 @@
+---
+title: "Project 872"
+author: "Rachael Grainger"
+date: "2022-11-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r include=FALSE}
+#load packages
+install.packages(dplyr)
+library(dplyr)
+library(lubridate)
+library(tidyverse)
+library(lubridate)
+library(sf)
+library(mapview)
+library(RColorBrewer)
+
+#add in data here
+
+Animal_Operations <- read.csv("~/vininggrainger872/Project folder/Raw Data/Animal_Operation_Permits_.csv")
+
+
+
+```
+
+## Social Vulnerability Index
+
+CDC's Social Vulnerability Index data will be used to compare areas in North Carolina. 
+Social Vulnerability Data: - <https://www.atsdr.cdc.gov/placeandhealth/svi/documentation/SVI_documentation_2018.html> - <https://www.atsdr.cdc.gov/placeandhealth/svi/documentation/pdf/SVI2018Documentation-H.pdf>
+
+Brief notes: - "E\_" are estimates; "M\_" are margins of error - "EP\_ are estimates, in percentages - "SPL_THEME1" is sum of series - "RPL_THEME1" is percentile ranking
+
+We'll focus on just a few variables: Estimates of people in poverty ("E_POV") and of minority population ("E_MINRTY"), keeping the location attributes as well.
+
+```{r join.attributes.to.spatial features}
+
+#Read the 2018 SVI county-level dataset for NC
+svi2018_nc_raw <- read.csv(
+  'https://svi.cdc.gov/Documents/Data/2018_SVI_Data/CSV/States_Counties/NorthCarolina_COUNTY.csv',
+  colClasses = c('FIPS' = 'factor')) %>% 
+  select(COUNTY, FIPS, LOCATION, E_TOTPOP, E_POV, E_MINRTY)
+#Check structure
+str(svi2018_nc_raw)
+
+##create counties
+counties_sf<- st_read('~/vininggrainger872/Project folder/Spatial/cb_2018_us_county_20m.shp') %>% 
+  filter(STATEFP == 37) #Filter for just NC Counties
+
+#Join the SVI attributes to the county spatial features
+counties_sf_join <-  merge(x = counties_sf,
+                           y = svi2018_nc_raw, 
+                           by.x = "GEOID", 
+                           by.y = "FIPS" )
+
+#Tidyverse version of the join
+counties_sf_join <- counties_sf %>% 
+  left_join(svi2018_nc_raw, by = c("GEOID" = "FIPS") )
+
+#View with mapview
+library(leaflet)
+counties_sf_join_converted <- st_transform(counties_sf_join, c=4326)
+
+leaflet() %>% addTiles() %>% 
+  addPolygons(data=counties_sf_join_converted,weight=1,color=brewer.pal(3, 'RdBu'))
+
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
