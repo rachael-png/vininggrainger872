@@ -15,7 +15,7 @@ How do communities in North Carolina experience varying levels of environmental 
 
 Potential Hypothesis:
 As the birthplace of the environmental justice movement, North Carolina is no stranger to environmental injustices. We expect that today Hog farms will still be correlated/concentrated in communities of higher social vulnerability (i.e., lowerer SES, predominantly nonwhite) across North Carolina. We also predict that energy systems, such as solar farms, will be concentrated in communities of lower social vulnerability (i.e., higher SES, predominately white) areas in North Carolina.
-
+hello
 
 ## Investigators
 
