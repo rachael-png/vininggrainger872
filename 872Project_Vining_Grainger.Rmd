@@ -143,7 +143,7 @@ hog_farm_map
 ##Add Counties Hog Farms
 
 hog_farm_map2 <- leaflet() %>%
-  addCircleMarkers(data = hog_farms.sf, radius = 1, color = "red", stroke = FALSE, fillOpacity = 0.8) %>%
+  addCircleMarkers(data = hog_farms.sf, radius = 2, color = "red", stroke = FALSE, fillOpacity = 0.9) %>%
   addLegend(data = hog_farms.sf, values=~Type,pal=qpal,title="Farm Type") %>%
   addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
               color="black",fillColor = ~qpal(MinorityPerc),weight = 1) %>%
