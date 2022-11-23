@@ -96,12 +96,16 @@ counties_percent <- counties_sf_join_converted %>% group_by(LOCATION) %>% mutate
 
 ##Create maps
 
+
+
 ## PERCENT IN POVERTY MAP BY COUNTY
 qpal = colorBin("Reds", counties_sf_join_converted$PovertyPerc, bins=9)
 
 countymap_poverty <- leaflet(counties_percent) %>%
   addPolygons(stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
               color="black",fillColor = ~qpal(PovertyPerc),weight = 1) %>%
+  addProviderTiles("Esri.WorldGrayCanvas",
+        options = providerTileOptions(minZoom=3, maxZoom=8))  %>%
   addLegend(values=~PovertyPerc,pal=qpal,title="Percent in Poverty")
 
 countymap_poverty
@@ -129,26 +133,23 @@ hog_farms.sf  <- hog_farms %>%
   st_as_sf(coords = c('Longitude','Latitude'),
            crs=4326)
 
+hog_farms.sf2 <- hog_farms.sf %>% drop_na(X)
+
 ##Map Hog Farms
-
-hog_farm_map <- leaflet(hog_farms.sf) %>%
-  addCircleMarkers(radius = 1, color = "red", stroke = FALSE, fillOpacity = 0.5) %>%
-  addLegend(values=~Type,pal=qpal,title="Farm Type") %>%
- 
-  
-   countymap_minority
-
-hog_farm_map
-
 ##Add Counties Hog Farms
 
-hog_farm_map2 <- leaflet() %>%
-  addCircleMarkers(data = hog_farms.sf, radius = 2, color = "red", stroke = FALSE, fillOpacity = 0.9) %>%
-  addLegend(data = hog_farms.sf, values=~Type,pal=qpal,title="Farm Type") %>%
+qpal2 <- colorQuantile("RdYlBu", counties_percent$MinorityPerc, n = 9)
+
+hog_farm_map1 <- leaflet() %>% 
+  addCircleMarkers(data = hog_farms.sf2, radius = 2, color = "red", stroke = FALSE, fillOpacity = 0.9) %>%
+  addLegend(data = hog_farms.sf2, values=~Type,pal=qpal,title="Farm Type") %>%
   addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
               color="black",fillColor = ~qpal(MinorityPerc),weight = 1) %>%
-  addLegend(data =counties_percent, values=~MinorityPerc,pal=qpal,title="Percent Minority")
+    addProviderTiles("Esri.WorldGrayCanvas",
+        options = providerTileOptions(minZoom=3, maxZoom=8))  %>%
+    addLabelOnlyMarkers(data = hog_farms.sf2, label = ~Facility) %>%
+  addLegend(data =counties_percent, values=~qpal2,pal=qpal,title="Percent Minority")
 
-hog_farm_map2 
+hog_farm_map1
 
 ```
