@@ -94,7 +94,7 @@ counties_sf_join_converted <- st_transform(counties_sf_join, c=4326)
 counties_percent <- counties_sf_join_converted %>% group_by(LOCATION) %>% mutate(
                                   PovertyPerc=E_POV/E_TOTPOP, MinorityPerc=E_MINRTY/E_TOTPOP)
 
-##Create map
+##Create maps
 
 ## PERCENT IN POVERTY MAP BY COUNTY
 qpal = colorBin("Reds", counties_sf_join_converted$PovertyPerc, bins=9)
@@ -116,6 +116,39 @@ countymap_minority <- leaflet(counties_percent) %>%
 
 countymap_minority
 
+
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r hog farm map}
+
+##Convert hog farm data
+       
+hog_farms.sf  <- hog_farms %>% 
+  st_as_sf(coords = c('Longitude','Latitude'),
+           crs=4326)
+
+##Map Hog Farms
+
+hog_farm_map <- leaflet(hog_farms.sf) %>%
+  addCircleMarkers(radius = 1, color = "red", stroke = FALSE, fillOpacity = 0.5) %>%
+  addLegend(values=~Type,pal=qpal,title="Farm Type") %>%
+ 
+  
+   countymap_minority
+
+hog_farm_map
+
+##Add Counties Hog Farms
+
+hog_farm_map2 <- leaflet() %>%
+  addCircleMarkers(data = hog_farms.sf, radius = 1, color = "red", stroke = FALSE, fillOpacity = 0.8) %>%
+  addLegend(data = hog_farms.sf, values=~Type,pal=qpal,title="Farm Type") %>%
+  addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
+              color="black",fillColor = ~qpal(MinorityPerc),weight = 1) %>%
+  addLegend(data =counties_percent, values=~MinorityPerc,pal=qpal,title="Percent Minority")
+
+hog_farm_map2 
+
+```
