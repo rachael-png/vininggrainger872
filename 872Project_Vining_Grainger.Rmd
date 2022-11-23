@@ -44,6 +44,9 @@ View(solar_data)
 #refine and combine data
 
 solar_plants_NC <- left_join(solar_data, allplant_data)
+library(dplyr)
+hog_farms <- Animal_Operations %>%
+  filter(Type == "Swine State COC")
 
 
 ```
@@ -81,13 +84,37 @@ counties_sf_join <-  merge(x = counties_sf,
 counties_sf_join <- counties_sf %>% 
   left_join(svi2018_nc_raw, by = c("GEOID" = "FIPS") )
 
+
+
 #View with mapview
 library(leaflet)
 counties_sf_join_converted <- st_transform(counties_sf_join, c=4326)
 
-leaflet() %>% addTiles() %>% 
-  addPolygons(data=counties_sf_join_converted,weight=1,color=brewer.pal(3, 'RdBu'))
+##get percents of poverty
+counties_percent <- counties_sf_join_converted %>% group_by(LOCATION) %>% mutate(
+                                  PovertyPerc=E_POV/E_TOTPOP, MinorityPerc=E_MINRTY/E_TOTPOP)
 
+##Create map
+
+## PERCENT IN POVERTY MAP BY COUNTY
+qpal = colorBin("Reds", counties_sf_join_converted$PovertyPerc, bins=9)
+
+countymap_poverty <- leaflet(counties_percent) %>%
+  addPolygons(stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
+              color="black",fillColor = ~qpal(PovertyPerc),weight = 1) %>%
+  addLegend(values=~PovertyPerc,pal=qpal,title="Percent in Poverty")
+
+countymap_poverty
+
+## PERCENT MINORITY MAP BY COUNTY
+qpal = colorBin("Reds", counties_sf_join_converted$MinorityPerc, bins=9)
+
+countymap_minority <- leaflet(counties_percent) %>%
+  addPolygons(stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
+              color="black",fillColor = ~qpal(MinorityPerc),weight = 1) %>%
+  addLegend(values=~MinorityPerc,pal=qpal,title="Percent Minority")
+
+countymap_minority
 
 ```
 
