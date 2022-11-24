@@ -70,7 +70,7 @@ svi2018_nc_raw <- read.csv(
 str(svi2018_nc_raw)
 
 ##create counties
-counties_sf<- st_read('~/vininggrainger872/Project folder/Spatial/cb_2018_us_county_20m.shp') %>% 
+counties_sf<- st_read('Project folder/Spatial/cb_2018_us_county_20m.shp') %>% 
   filter(STATEFP == 37) #Filter for just NC Counties
 
 #Join the SVI attributes to the county spatial features
@@ -140,7 +140,7 @@ hog_farms.sf2 <- hog_farms.sf %>% drop_na(X)
 qpal2 <- colorQuantile("RdYlBu", counties_percent$MinorityPerc, n = 9)
 
 hog_farm_map1 <- leaflet() %>% 
-  addCircleMarkers(data = hog_farms.sf2, radius = 2, color = "red", stroke = FALSE, fillOpacity = 0.9) %>%
+  addCircleMarkers(data = hog_farms.sf2, radius = 2, color = "blue", stroke = FALSE, fillOpacity = 0.9) %>%
   addLegend(data = hog_farms.sf2, values=~Type,pal=qpal,title="Farm Type") %>%
   addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
               color="black",fillColor = ~qpal(MinorityPerc),weight = 1) %>%
@@ -163,7 +163,7 @@ solar_plants_NC.sf  <- solar_plants_NC %>%
 ##Map Solar Farms with County Demographics
 
 solar_map1 <- leaflet() %>% 
-  addCircleMarkers(data = hog_farms.sf2, radius = 2, color = "red", stroke = FALSE, fillOpacity = 0.9) %>%
+  addCircleMarkers(data = hog_farms.sf2, radius = 2, color = "purple", stroke = FALSE, fillOpacity = 0.9) %>%
   addLegend(data = hog_farms.sf2, values=~Type,pal=qpal,title="Farm Type") %>%
   addCircleMarkers(data = solar_plants_NC.sf, radius = 2, color = "green", stroke = FALSE, fillOpacity = 0.9) %>%
   addLegend(data = solar_plants_NC.sf, values=~"Plant Name",pal=qpal,title="Solar Farm Name") %>%
@@ -178,3 +178,6 @@ solar_map1
 
 
 ```
+
+
+
