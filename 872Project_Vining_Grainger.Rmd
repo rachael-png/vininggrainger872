@@ -29,6 +29,8 @@ library(sf)
 library(mapview)
 library(RColorBrewer)
 library(readxl)
+install.packages("viridis")
+library(viridis)
 
 #add in data here
 
@@ -98,24 +100,26 @@ counties_percent <- counties_sf_join_converted %>% group_by(LOCATION) %>% mutate
 
 
 ## PERCENT IN POVERTY MAP BY COUNTY
-qpal = colorNumeric(palette = "Reds", counties_sf_join_converted$PovertyPerc)
+qpal = colorNumeric(palette = "viridis", counties_sf_join_converted$PovertyPerc, reverse = TRUE)
 
 countymap_poverty <- leaflet(counties_percent) %>%
   addPolygons(stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
               color="black",fillColor = ~qpal(PovertyPerc),weight = 1) %>%
   addProviderTiles("Esri.WorldGrayCanvas",
-        options = providerTileOptions(minZoom=3, maxZoom=8))  %>%
-  addLegend("bottomright", values=~PovertyPerc,pal=qpal,title="Percent in Poverty", labFormat = labelFormat(prefix = "%"), opacity = 1)
+        options = providerTileOptions(minZoom=6, maxZoom=10))  %>%
+  addLegend("bottomright", values=~PovertyPerc*100,pal=qpal,title="Percent in Poverty", labFormat = labelFormat(suffix = "%"), opacity = 1)
 
 countymap_poverty
 
 ## PERCENT MINORITY MAP BY COUNTY
-qpal = colorNumeric( palette = "Reds", domain = counties_sf_join_converted$MinorityPerc)
+qpal = colorNumeric( palette = "plasma", domain = counties_sf_join_converted$MinorityPerc, reverse = TRUE)
 
 countymap_minority <- leaflet(counties_percent) %>%
   addPolygons(stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
               color="black",fillColor = ~qpal(MinorityPerc),weight = 1) %>%
-  addLegend("bottomright", values=~MinorityPerc,pal=qpal,title="Percent Minority", labFormat = labelFormat(prefix = "%"), opacity = 1)
+  addProviderTiles("Esri.WorldGrayCanvas",
+        options = providerTileOptions(minZoom=6, maxZoom=10)) %>%
+  addLegend("bottomright", values=~MinorityPerc*100,pal=qpal,title="Percent Minority", labFormat = labelFormat(suffix = "%"), opacity = 1)
 
 countymap_minority
 
@@ -136,22 +140,43 @@ hog_farms.sf2 <- hog_farms.sf %>% drop_na(X)
 
 ##Map Hog Farms
 ##Add Counties Hog Farms
-
-qpal2 <- colorNumeric(palette = "RdYlBu", counties_percent$MinorityPerc)
+qpal2 = colorNumeric( palette = "plasma", domain = counties_sf_join_converted$MinorityPerc, reverse = TRUE)
+qpal3 = colorNumeric( palette = "plasma", domain = counties_sf_join_converted$PovertyPerc, reverse = TRUE)
+qpal <- colorNumeric(palette = "RdYlBu", counties_percent$MinorityPerc)
+paltype <- colorFactor(
+   palette = "#ffe9e3",
+   domain = hog_farms.sf2$Type)
 
 hog_farm_map1 <- leaflet() %>% 
-  addCircleMarkers(data = hog_farms.sf2, radius = 2, color = "blue", stroke = FALSE, fillOpacity = 0.9) %>%
-  addLegend(data = hog_farms.sf2, values=~Type,pal=qpal,title="Farm Type") %>%
   addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
               color="black",fillColor = ~qpal(MinorityPerc),weight = 1) %>%
+   addLegend("topright", data = hog_farms.sf2, pal=paltype, values=~Type,title="Farm Type") %>%
     addProviderTiles("Esri.WorldGrayCanvas",
-        options = providerTileOptions(minZoom=3, maxZoom=8))  %>%
+        options = providerTileOptions(minZoom=6, maxZoom=14))  %>%
     addLabelOnlyMarkers(data = hog_farms.sf2, label = ~Facility) %>%
-  addLegend("bottomright", data =counties_percent, values=~qpal2,pal=qpal,title="Percent Minority", labFormat = labelFormat(prefix = "%"), opacity = 1)
+  addLegend("bottomright", data=counties_percent, values=~MinorityPerc*100,pal=qpal2,title="Percent Minority", labFormat = labelFormat(suffix = "%"), opacity = 1) %>%
+  addCircleMarkers(data = hog_farms.sf2, radius = 3, color = "black", stroke = TRUE, weight = 1, fillOpacity = 0.8, fillColor = "#ffe9e3")
 
 hog_farm_map1
 
+
+##POVERTY HOG FARMS
+
+hog_farm_map_pov <- leaflet() %>% 
+  addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
+              color="black",fillColor = ~qpal3(PovertyPerc),weight = 1) %>%
+   addLegend("topright", data = hog_farms.sf2, pal=paltype, values=~Type,title="Farm Type") %>%
+    addProviderTiles("Esri.WorldGrayCanvas",
+        options = providerTileOptions(minZoom=6, maxZoom=14))  %>%
+    addLabelOnlyMarkers(data = hog_farms.sf2, label = ~Facility) %>%
+  addLegend("bottomright", data=counties_percent, values=~PovertyPerc*100,pal=qpal3,title="Percent in Poverty", labFormat = labelFormat(suffix = "%"), opacity = 1) %>%
+  addCircleMarkers(data = hog_farms.sf2, radius = 3, color = "black", stroke = TRUE, weight = 1, fillOpacity = 0.8, fillColor = "#ffe9e3")
+
+hog_farm_map_pov
+
+
 ```
+
 ```{r add solar farms}
 
 ##Convert data to spatial
@@ -162,19 +187,36 @@ solar_plants_NC.sf  <- solar_plants_NC %>%
 
 ##Map Solar Farms with County Demographics
 
+##Solar Minority WIHTOUT HOG FARMS
+
+paltype_solar <- colorFactor(
+   palette = "#c9ffc7",
+   domain = solar_plants_NC.sf$Technology)
+
 solar_map1 <- leaflet() %>% 
-  addCircleMarkers(data = hog_farms.sf2, radius = 2, color = "purple", stroke = FALSE, fillOpacity = 0.9) %>%
-  addLegend(data = hog_farms.sf2, values=~Type,pal=qpal,title="Farm Type") %>%
-  addCircleMarkers(data = solar_plants_NC.sf, radius = 2, color = "green", stroke = FALSE, fillOpacity = 0.9) %>%
-  addLegend(data = solar_plants_NC.sf, values=~"Plant Name",pal=qpal,title="Solar Farm Name") %>%
+  addLegend(data = solar_plants_NC.sf, values=~Technology,pal=paltype_solar,title="Solar Farm Type" ) %>%
   addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
               color="black",fillColor = ~qpal(MinorityPerc),weight = 1) %>%
     addProviderTiles("Esri.WorldGrayCanvas",
-        options = providerTileOptions(minZoom=3, maxZoom=8))  %>%
-    addLabelOnlyMarkers(data = hog_farms.sf2, label = ~Facility) %>%
-  addLegend(data =counties_percent, values=~qpal2,pal=qpal,title="Percent Minority")
+        options = providerTileOptions(minZoom=6, maxZoom=14))  %>%
+addLegend("bottomright", data=counties_percent, values=~MinorityPerc*100,pal=qpal2,title="Percent Minority", labFormat = labelFormat(suffix = "%"), opacity = 1)  %>%
+  addCircleMarkers(data = solar_plants_NC.sf, radius = 3, color = "black", stroke = TRUE, weight = 1, fillOpacity = 0.8, fillColor = "#c9ffc7")
 
 solar_map1
+
+##Solar + POVERTY WIHTOUT HOG FARMS
+
+
+solar_map_pov <- leaflet() %>% 
+  addLegend(data = solar_plants_NC.sf, values=~Technology,pal=paltype_solar,title="Solar Farm Type" ) %>%
+  addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
+              color="black",fillColor = ~qpal3(PovertyPerc),weight = 1) %>%
+    addProviderTiles("Esri.WorldGrayCanvas",
+        options = providerTileOptions(minZoom=6, maxZoom=14))  %>%
+addLegend("bottomright", data=counties_percent, values=~PovertyPerc*100,pal=qpal3,title="Percent in Poverty", labFormat = labelFormat(suffix = "%"), opacity = 1)  %>%
+  addCircleMarkers(data = solar_plants_NC.sf, radius = 3, color = "black", stroke = TRUE, weight = 1, fillOpacity = 0.8, fillColor = "#c9ffc7")
+
+solar_map_pov
 
 
 ```
