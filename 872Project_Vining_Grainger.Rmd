@@ -16,10 +16,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r include=FALSE}
-#load packages
-setwd("~/R/vininggrainger872")
-
-install.packages(dplyr)
+getwd()
 library(dplyr)
 library(plyr)
 library(lubridate)
@@ -37,10 +34,8 @@ library(viridis)
 Animal_Operations <- read.csv("Project folder/Raw Data/Animal_Operation_Permits_.csv")
 
 allplant_data <- read_excel("Project folder/Raw Data/allplant_data.xlsx")
-View(allplant_data)
 
 solar_data <- read_excel("Project folder/Raw Data/solar_data.xlsx")
-View(solar_data)
 
 #refine and combine data
 
@@ -61,7 +56,7 @@ Brief notes: - "E\_" are estimates; "M\_" are margins of error - "EP\_ are estim
 
 We'll focus on just a few variables: Estimates of people in poverty ("E_POV") and of minority population ("E_MINRTY"), keeping the location attributes as well.
 
-```{r join.attributes.to.spatial features}
+```{r join.attributes.to.spatial features, out.width = '100%'}
 
 #Read the 2018 SVI county-level dataset for NC
 svi2018_nc_raw <- read.csv(
@@ -100,7 +95,7 @@ counties_percent <- counties_sf_join_converted %>% group_by(LOCATION) %>% mutate
 
 
 ## PERCENT IN POVERTY MAP BY COUNTY
-qpal = colorNumeric(palette = "viridis", counties_sf_join_converted$PovertyPerc, reverse = TRUE)
+qpal = colorNumeric(palette = "plasma", counties_sf_join_converted$PovertyPerc, reverse = TRUE)
 
 countymap_poverty <- leaflet(counties_percent) %>%
   addPolygons(stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
@@ -128,7 +123,7 @@ countymap_minority
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
-```{r hog farm map}
+```{r hog farm map, out.width = '100%'}
 
 ##Convert hog farm data
        
@@ -142,7 +137,7 @@ hog_farms.sf2 <- hog_farms.sf %>% drop_na(X)
 ##Add Counties Hog Farms
 qpal2 = colorNumeric( palette = "plasma", domain = counties_sf_join_converted$MinorityPerc, reverse = TRUE)
 qpal3 = colorNumeric( palette = "plasma", domain = counties_sf_join_converted$PovertyPerc, reverse = TRUE)
-qpal <- colorNumeric(palette = "RdYlBu", counties_percent$MinorityPerc)
+qpal <- colorNumeric(palette = "plasma", domain = counties_sf_join_converted$PovertyPerc, reverse = TRUE)
 paltype <- colorFactor(
    palette = "#ffe9e3",
    domain = hog_farms.sf2$Type)
@@ -177,7 +172,7 @@ hog_farm_map_pov
 
 ```
 
-```{r add solar farms}
+```{r solar farm maps, out.width = '100%'}
 
 ##Convert data to spatial
        
