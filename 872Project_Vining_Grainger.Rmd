@@ -40,6 +40,10 @@ solar_data <- read_excel("Project folder/Raw Data/solar_data.xlsx")
 #refine and combine data
 
 solar_plants_NC <- left_join(solar_data, allplant_data)
+solar_plants_NC <- solar_plants_NC %>%
+  select(`Utility ID`:`Winter Capacity (MW)`, `Street Address`:Longitude)
+View(solar_plants_NC)
+
 library(dplyr)
 hog_farms <- Animal_Operations %>%
   filter(Type == "Swine State COC")
@@ -90,6 +94,8 @@ counties_sf_join_converted <- st_transform(counties_sf_join, c=4326)
 counties_percent <- counties_sf_join_converted %>% group_by(LOCATION) %>% mutate(
                                   PovertyPerc=E_POV/E_TOTPOP, MinorityPerc=E_MINRTY/E_TOTPOP)
 
+
+
 ##Create maps
 
 
@@ -119,6 +125,12 @@ countymap_minority <- leaflet(counties_percent) %>%
 countymap_minority
 
 
+```
+
+
+```{r correlations}
+#cor.test(solar_plants_NC$`Nameplate Capacity (MW)`, counties_percent$E_POV)
+#main issue with correlation is that the variables have to be the same length; need to brainstorm how to do so without that
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
