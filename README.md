@@ -53,6 +53,33 @@ File organization for the project focused on separating the project file and Rea
 
 <For each data file in the repository, describe the data contained in each column. Include the column name, a description of the information, the class of data, and any units associated with the data. Create a list or table for each data file.> 
 
+Animal Operations:
+
+Counties Percent?:
+
+Solar_Plants_NC: this file was combined with all plant data and solar data file for the useable data needed for the project. It contains the following column variables:
+
+- Utility ID: (num) identifying number that is associated with the utility the solar farm is connected to 
+- Utility Name: (chr): name of the utility that the solar farm is connected to
+- Plant Code: (num) numeric code that the EIA gives an individual energy plant
+- Plant Name: (chr) Name of the energy plant/solar farm
+- State:(chr) state where the energy plant/solar farm is located
+- County: (chr) county in which the energy plant/solar farm is located in
+- Generator ID: (chr) numeric identifier for the company/org that generates the energy 
+- Status: (chr) labels the operating status of the energy plant
+- Technology: (chr) describes the technology used to generate energy
+- Nameplate Capacity (MW): (num) value associated with the energy generating capacity
+- Summer Capacity (MW): (num) value associated with the energy generating capacity for the summer months
+- Winter Capacity (MW): (num) value associated with the energy generating capacity for the winter months
+- Street Address: (chr) Address where the facility is located
+- City: (chr) city in which the facility is located
+- Zip: (num) zip code in which the facility is located
+- Latitude: (num) latittude coordinates for location of facility
+- Longitude: (num) longitude coordinates for location of facility
+
+
+
+
 ## Scripts and code
 
 <list any software scripts/code contained in the repository and a description of their purpose.>
