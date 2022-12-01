@@ -202,6 +202,7 @@ solar_map1
 ##Solar + POVERTY WIHTOUT HOG FARMS
 
 
+
 solar_map_pov <- leaflet() %>% 
   addLegend(data = solar_plants_NC.sf, values=~Technology,pal=paltype_solar,title="Solar Farm Type" ) %>%
   addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
