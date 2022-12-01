@@ -1,6 +1,6 @@
 ---
 title: "Project 872"
-author: "Rachael Grainger"
+author: "Rachael Grainger and Matthew Vining"
 date: "2022-11-19"
 output: html_document
 ---
@@ -8,13 +8,19 @@ output: html_document
 ```{r setup, include=FALSE}
 #Set Up Document
 knitr::opts_chunk$set(echo = TRUE)
+
+#GITHUB LINK: https://github.com/rachael-png/vininggrainger872
 ```
 
-## R Markdown
+### Environmental Data Analysis of Hog Farm and Solar Farm Concentration in North Carolina
+## By: Rachael Grainger and Matthew Vining
+# Fall 2023
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+# Project Central Question:
+How do communities in North Carolina experience varying levels of environmental risks and benefits, with a particular lens on environmental justice communities?
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+# Potential Hypothesis:
+As the birthplace of the environmental justice movement, North Carolina is no stranger to environmental injustices. We expect that today Hog farms will still be correlated/concentrated in communities of higher social vulnerability (i.e., lower SES, predominantly nonwhite) across North Carolina. We also predict that energy systems, such as solar farms, will be concentrated in communities of lower social vulnerability (i.e., higher SES, predominately white) areas in North Carolina.
 
 ```{r include=FALSE}
 #Load Useful Packages for Project
@@ -367,10 +373,20 @@ solarpov_plot2
 ```
 ### Summary & Conclusion
 
-While our spatial analysis clearly indicate a concentration of hog farms in counties experiencing high poverty rates, we can run a regression analysis to test the statistical significance of this concentration. We found that there is a significant presence of hog farms concentrated in counties with higher poverty levels  (p-value = 0.00472). However, the R-squared value is fairly small (0.1165), which indicates there are likely other variables at play that are associated with where hog farms are concentrated in North Carolina besides just poverty levels of the county. Additionally, there is a slight correlation between hog farm concentration and higher minority concentrations, but the p-value is not significant (0.21). 
+While our spatial analysis clearly indicates a concentration of hog farms in counties experiencing high poverty rates, we can decided to run a correlation and regression analysis to test the statistical significance of this concentration. We found that there is a significant presence of hog farms concentrated in counties with higher poverty levels  (p-value = 0.00472). However, the R-squared value is fairly small (0.1165), which indicates there are likely other variables at play that are associated with where hog farms are concentrated in North Carolina besides just poverty levels of the county. Additionally, there is a slight correlation between hog farm concentration and higher minority concentrations, but the p-value is not significant (0.21). 
 
+When analyzing the relationship between solar farms, or their capacity (MW), and poverty and minority levels, spatial analysis revealed that there was not a signficicant relationship. To further explore this relationship, we performed correlation and regression analysis on nameplate capacity of solar farms vs the poverty level and minority level, grouped at the county level to control for differences amongst counties and county borders. The resulting R-squared value for the realtionship with percent minority was very low at 0.004206, meaning there wasn't indication of a strong relationship between electricity capacity and % minority of a county. Further, the p-value was not significant (0.089758), meaning there was not enough evidence to reject a null hypothesis of no relationship. Similarly the relationship between percent poverty and nameplate capapcity was weak, with an R-squared value of 0.004206. The p-value for this relationship was insignificant at .0808.
 
+Overall, we conclude that there is a significant relationship between hog farm placement and the percentage of people in poverty living in a given county. The higher the percentage of impoverished people live in a given county, the greater chance there will be more hog farms located in that county. The relationships explored between hog farms and percent minority, solar farms and percent poverty, and solar farms and percent minority all yielded insignificant statistical analyses. The team recommends adding additional factors outside of poverty and minority measures to understand the underlying factors contributing to placement of hog farms and solar farms. If a broader analysis is done, incorporating more variables, a stronger relationship may be revealed. 
 
+### TO DOUBLE CHECK
+Metadata file(s) contains information about data source,
+data structure, units of measure, and repository compilers
+
+Flow between text and visualizations is cohesive
+
+Major findings are summarized
+Conclusions relate back to the original research context
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
