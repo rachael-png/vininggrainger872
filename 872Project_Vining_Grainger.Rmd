@@ -26,7 +26,7 @@ library(sf)
 library(mapview)
 library(RColorBrewer)
 library(readxl)
-install.packages("viridis")
+#install.packages("viridis")
 library(viridis)
 
 #add in data here
@@ -40,9 +40,15 @@ solar_data <- read_excel("Project folder/Raw Data/solar_data.xlsx")
 #refine and combine data
 
 solar_plants_NC <- left_join(solar_data, allplant_data)
+solar_plants_NC <- solar_plants_NC %>%
+  select(`Utility ID`:`Winter Capacity (MW)`, `Street Address`:Longitude) %>%
+  group_by(County)
+View(solar_plants_NC)
+
 library(dplyr)
 hog_farms <- Animal_Operations %>%
-  filter(Type == "Swine State COC")
+  filter(Type == "Swine State COC") %>%
+  group_by(County)
 
 
 ```
@@ -90,6 +96,8 @@ counties_sf_join_converted <- st_transform(counties_sf_join, c=4326)
 counties_percent <- counties_sf_join_converted %>% group_by(LOCATION) %>% mutate(
                                   PovertyPerc=E_POV/E_TOTPOP, MinorityPerc=E_MINRTY/E_TOTPOP)
 
+
+
 ##Create maps
 
 
@@ -119,6 +127,36 @@ countymap_minority <- leaflet(counties_percent) %>%
 countymap_minority
 
 
+```
+
+
+```{r correlations}
+
+#Prepare data for correlation testing
+
+Hog_SVI_merge <- hog_farms %>%
+  left_join(counties_percent, by = c("County" = "COUNTY") )
+
+#cor.test(Hog_SVI_merge$PovertyPerc, Hog_SVI_merge$)
+
+Solar_SVI_merge <- solar_plants_NC %>%
+  left_join(counties_percent, by = c("County" = "COUNTY"))
+
+#Correlation of Solar Farm Capacity and Poverty Level
+
+cor.test(Solar_SVI_merge$PovertyPerc, Solar_SVI_merge$`Nameplate Capacity (MW)`) 
+
+Solar_SVI_merge %>%
+  group_by(County) %>%
+  summarize(cor=cor(PovertyPerc, `Nameplate Capacity (MW)`))
+#compare correlation when grouped by county and when not
+
+#Correlation of Solar Farm Capacity and Minority Level
+cor.test(Solar_SVI_merge$MinorityPerc, Solar_SVI_merge$`Nameplate Capacity (MW)`) 
+
+Solar_SVI_merge %>%
+  group_by(County) %>%
+  summarize(cor=cor(MinorityPerc, `Nameplate Capacity (MW)`))
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
