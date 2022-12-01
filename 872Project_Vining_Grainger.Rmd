@@ -6,6 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+#Set Up Document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -16,6 +17,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r include=FALSE}
+#Load Useful Packages for Project
 getwd()
 library(dplyr)
 library(plyr)
@@ -29,7 +31,7 @@ library(readxl)
 #install.packages("viridis")
 library(viridis)
 
-#add in data here
+#Read in Data
 
 Animal_Operations <- read.csv("Project folder/Raw Data/Animal_Operation_Permits_.csv")
 
@@ -37,14 +39,15 @@ allplant_data <- read_excel("Project folder/Raw Data/allplant_data.xlsx")
 
 solar_data <- read_excel("Project folder/Raw Data/solar_data.xlsx")
 
-#refine and combine data
+#Refine and Combine Data
 
+#filter solar plant data by county and select useful columns
 solar_plants_NC <- left_join(solar_data, allplant_data)
 solar_plants_NC <- solar_plants_NC %>%
   select(`Utility ID`:`Winter Capacity (MW)`, `Street Address`:Longitude) %>%
   group_by(County)
-View(solar_plants_NC)
 
+#filter animal farm data for hog farms only and group by county
 library(dplyr)
 hog_farms <- Animal_Operations %>%
   filter(Type == "Swine State COC") %>%
@@ -69,10 +72,11 @@ svi2018_nc_raw <- read.csv(
   'https://svi.cdc.gov/Documents/Data/2018_SVI_Data/CSV/States_Counties/NorthCarolina_COUNTY.csv',
   colClasses = c('FIPS' = 'factor')) %>% 
   select(COUNTY, FIPS, LOCATION, E_TOTPOP, E_POV, E_MINRTY)
+
 #Check structure
 str(svi2018_nc_raw)
 
-##create counties
+##Create counties
 counties_sf<- st_read('Project folder/Spatial/cb_2018_us_county_20m.shp') %>% 
   filter(STATEFP == 37) #Filter for just NC Counties
 
@@ -98,7 +102,7 @@ counties_percent <- counties_sf_join_converted %>% group_by(LOCATION) %>% mutate
 
 
 
-##Create maps
+##Create Maps of Poverty and Minority Indicators per County
 
 
 
@@ -132,7 +136,7 @@ countymap_minority
 
 ```{r correlations}
 
-#Prepare data for correlation testing
+#Prepare hog farm data for correlation testing
 
 Hog_SVI_merge <- hog_farms %>%
   left_join(counties_percent, by = c("County" = "COUNTY") )
@@ -147,14 +151,16 @@ colnames(Hog_SVI_merge2) <- c('County','Farms')
 Hog_SVI_cor <- Hog_SVI_merge2 %>%
   left_join(counties_percent, by = c("County" = "COUNTY"))
 
-#Cor test Hog Farms
+#Cor test hog farms
 
 cor.test(Hog_SVI_cor$PovertyPerc, Hog_SVI_cor$Farms)
 cor.test(Hog_SVI_cor$MinorityPerc, Hog_SVI_cor$Farms)
 summary(aov(Hog_SVI_cor$MinorityPerc ~ Hog_SVI_cor$Farms))
 summary(aov(Hog_SVI_cor$PovertyPerc ~ Hog_SVI_cor$Farms))
 
-## Poverty Corr & Hog Farms
+## Map Hog Farms
+
+# Hog Farms and Poverty Level
 plothogpv <- lm(Farms~PovertyPerc,data=Hog_SVI_cor) 
 	summary(plothogpv)
 
@@ -174,7 +180,7 @@ axis.title.y = element_text(color="#292929", size=10, face="bold", family="mono"
 	
 hogplot1
 
-## Minority Corr & Hog Farms
+## Hog Farms and Minority Level
 
 plothogmin <-	ggplot(Hog_SVI_cor, aes(x=MinorityPerc, y=Farms)) +
               geom_point() +
@@ -199,7 +205,7 @@ axis.title.y = element_text(color="#292929", size=10, face="bold", family="mono"
 	
 hogplot2
 	
-#Solar Farms Correlations
+#Prepare data for solar farm correlation testing
 
 Solar_SVI_merge <- solar_plants_NC %>%
   left_join(counties_percent, by = c("County" = "COUNTY"))
@@ -211,7 +217,6 @@ cor.test(Solar_SVI_merge$PovertyPerc, Solar_SVI_merge$`Nameplate Capacity (MW)`)
 Solar_SVI_merge %>%
   group_by(County) %>%
   summarize(cor=cor(PovertyPerc, `Nameplate Capacity (MW)`))
-#compare correlation when grouped by county and when not
 
 #Correlation of Solar Farm Capacity and Minority Level
 cor.test(Solar_SVI_merge$MinorityPerc, Solar_SVI_merge$`Nameplate Capacity (MW)`) 
@@ -221,6 +226,7 @@ Solar_SVI_merge %>%
   summarize(cor=cor(MinorityPerc, `Nameplate Capacity (MW)`))
 
 ## Solar Plots
+
 ## Minority Concentration & Solar Farms
 
 solarmin <- lm(`Nameplate Capacity (MW)`~MinorityPerc,data=Solar_SVI_merge) 
@@ -245,7 +251,7 @@ solarmin_plot2
 ## Poverty & Solar Farms
 
 solarpov <- lm(`Nameplate Capacity (MW)`~PovertyPerc,data=Solar_SVI_merge) 
-	summary(solarmin)
+	summary(solarpov)
 
 solarpov_plot <-	ggplot(Solar_SVI_merge, aes(x=PovertyPerc, y=`Nameplate Capacity (MW)`)) +
               geom_point() +
@@ -255,7 +261,7 @@ solarpov_plot <-	ggplot(Solar_SVI_merge, aes(x=PovertyPerc, y=`Nameplate Capacit
               ggtitle("Correlation of Solar Farms & Poverty by County in NC")
              
 
-solarpov_plot2 <- solarmin_plot + theme(
+solarpov_plot2 <- solarpov_plot + theme(
 plot.title = element_text(color="#3cba6c", size=11, face="bold", family="mono"),
 axis.title.x = element_text(color="#292929", size=10, face="bold",  family="mono"),
 axis.title.y = element_text(color="#292929", size=10, face="bold", family="mono")
@@ -266,7 +272,7 @@ solarpov_plot2
 ```
 ### Correlation Results
 
-We found that there is a significant presence of hog farms concentrated in counties with higher poverty levels  (p-value = 0.00472). However, R-squared if fairly small (0.1165), which indicates there are likely other variables at play that are associated with where hog farms are concentrated in North Carolina. Additionally, there is a slight correlation between hog farm concentration and higher minority concentrations, but the p-value is not significant (0.21).
+We found that there is a significant presence of hog farms concentrated in counties with higher poverty levels  (p-value = 0.00472). However, the R-squared value is fairly small (0.1165), which indicates there are likely other variables at play that are associated with where hog farms are concentrated in North Carolina besides just poverty levels of the county. Additionally, there is a slight correlation between hog farm concentration and higher minority concentrations, but the p-value is not significant (0.21). 
 
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
@@ -282,6 +288,7 @@ hog_farms.sf  <- hog_farms %>%
 hog_farms.sf2 <- hog_farms.sf %>% drop_na(X)
 
 ##Map Hog Farms
+
 ##Add Counties Hog Farms
 qpal2 = colorNumeric( palette = "plasma", domain = counties_sf_join_converted$MinorityPerc, reverse = TRUE)
 qpal3 = colorNumeric( palette = "plasma", domain = counties_sf_join_converted$PovertyPerc, reverse = TRUE)
@@ -290,6 +297,7 @@ paltype <- colorFactor(
    palette = "#ffe9e3",
    domain = hog_farms.sf2$Type)
 
+# Minority Level and Hog Farms
 hog_farm_map1 <- leaflet() %>% 
   addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
               color="black",fillColor = ~qpal(MinorityPerc),weight = 1) %>%
@@ -303,7 +311,7 @@ hog_farm_map1 <- leaflet() %>%
 hog_farm_map1
 
 
-##POVERTY HOG FARMS
+## Poverty Level and Hog Farms
 
 hog_farm_map_pov <- leaflet() %>% 
   addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
@@ -330,7 +338,7 @@ solar_plants_NC.sf  <- solar_plants_NC %>%
 
 ##Map Solar Farms with County Demographics
 
-##Solar Minority WIHTOUT HOG FARMS
+##Solar + Minority WIHTOUT HOG FARMS
 
 paltype_solar <- colorFactor(
    palette = "#c9ffc7",
@@ -348,8 +356,6 @@ addLegend("bottomright", data=counties_percent, values=~MinorityPerc*100,pal=qpa
 solar_map1
 
 ##Solar + POVERTY WIHTOUT HOG FARMS
-
-
 
 solar_map_pov <- leaflet() %>% 
   addLegend(data = solar_plants_NC.sf, values=~Technology,pal=paltype_solar,title="Solar Farm Type" ) %>%
