@@ -134,6 +134,101 @@ countymap_minority
 ```
 
 
+
+```{r hog farm map, out.width = '100%'}
+
+##Convert hog farm data
+       
+hog_farms.sf  <- hog_farms %>% 
+  st_as_sf(coords = c('Longitude','Latitude'),
+           crs=4326)
+
+hog_farms.sf2 <- hog_farms.sf %>% drop_na(X)
+
+##Map Hog Farms
+
+##Add Counties Hog Farms
+qpal2 = colorNumeric( palette = "plasma", domain = counties_sf_join_converted$MinorityPerc, reverse = TRUE)
+qpal3 = colorNumeric( palette = "plasma", domain = counties_sf_join_converted$PovertyPerc, reverse = TRUE)
+qpal <- colorNumeric(palette = "plasma", domain = counties_sf_join_converted$PovertyPerc, reverse = TRUE)
+paltype <- colorFactor(
+   palette = "#ffe9e3",
+   domain = hog_farms.sf2$Type)
+
+# Minority Level and Hog Farms
+hog_farm_map1 <- leaflet() %>% 
+  addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
+              color="black",fillColor = ~qpal(MinorityPerc),weight = 1) %>%
+   addLegend("topright", data = hog_farms.sf2, pal=paltype, values=~Type,title="Farm Type") %>%
+    addProviderTiles("Esri.WorldGrayCanvas",
+        options = providerTileOptions(minZoom=6, maxZoom=14))  %>%
+    addLabelOnlyMarkers(data = hog_farms.sf2, label = ~Facility) %>%
+  addLegend("bottomright", data=counties_percent, values=~MinorityPerc*100,pal=qpal2,title="Percent Minority", labFormat = labelFormat(suffix = "%"), opacity = 1) %>%
+  addCircleMarkers(data = hog_farms.sf2, radius = 3, color = "black", stroke = TRUE, weight = 1, fillOpacity = 0.8, fillColor = "#ffe9e3")
+
+hog_farm_map1
+
+
+## Poverty Level and Hog Farms
+
+hog_farm_map_pov <- leaflet() %>% 
+  addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
+              color="black",fillColor = ~qpal3(PovertyPerc),weight = 1) %>%
+   addLegend("topright", data = hog_farms.sf2, pal=paltype, values=~Type,title="Farm Type") %>%
+    addProviderTiles("Esri.WorldGrayCanvas",
+        options = providerTileOptions(minZoom=6, maxZoom=14))  %>%
+    addLabelOnlyMarkers(data = hog_farms.sf2, label = ~Facility) %>%
+  addLegend("bottomright", data=counties_percent, values=~PovertyPerc*100,pal=qpal3,title="Percent in Poverty", labFormat = labelFormat(suffix = "%"), opacity = 1) %>%
+  addCircleMarkers(data = hog_farms.sf2, radius = 3, color = "black", stroke = TRUE, weight = 1, fillOpacity = 0.8, fillColor = "#ffe9e3")
+
+hog_farm_map_pov
+
+
+```
+
+```{r solar farm maps, out.width = '100%'}
+
+##Convert data to spatial
+       
+solar_plants_NC.sf  <- solar_plants_NC %>% 
+  st_as_sf(coords = c('Longitude','Latitude'),
+           crs=4326)
+
+##Map Solar Farms with County Demographics
+
+##Solar + Minority WIHTOUT HOG FARMS
+
+paltype_solar <- colorFactor(
+   palette = "#c9ffc7",
+   domain = solar_plants_NC.sf$Technology)
+
+solar_map1 <- leaflet() %>% 
+  addLegend(data = solar_plants_NC.sf, values=~Technology,pal=paltype_solar,title="Solar Farm Type" ) %>%
+  addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
+              color="black",fillColor = ~qpal(MinorityPerc),weight = 1) %>%
+    addProviderTiles("Esri.WorldGrayCanvas",
+        options = providerTileOptions(minZoom=6, maxZoom=14))  %>%
+addLegend("bottomright", data=counties_percent, values=~MinorityPerc*100,pal=qpal2,title="Percent Minority", labFormat = labelFormat(suffix = "%"), opacity = 1)  %>%
+  addCircleMarkers(data = solar_plants_NC.sf, radius = 3, color = "black", stroke = TRUE, weight = 1, fillOpacity = 0.8, fillColor = "#c9ffc7")
+
+solar_map1
+
+##Solar + POVERTY WIHTOUT HOG FARMS
+
+solar_map_pov <- leaflet() %>% 
+  addLegend(data = solar_plants_NC.sf, values=~Technology,pal=paltype_solar,title="Solar Farm Type" ) %>%
+  addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
+              color="black",fillColor = ~qpal3(PovertyPerc),weight = 1) %>%
+    addProviderTiles("Esri.WorldGrayCanvas",
+        options = providerTileOptions(minZoom=6, maxZoom=14))  %>%
+addLegend("bottomright", data=counties_percent, values=~PovertyPerc*100,pal=qpal3,title="Percent in Poverty", labFormat = labelFormat(suffix = "%"), opacity = 1)  %>%
+  addCircleMarkers(data = solar_plants_NC.sf, radius = 3, color = "black", stroke = TRUE, weight = 1, fillOpacity = 0.8, fillColor = "#c9ffc7")
+
+solar_map_pov
+
+
+```
+
 ```{r correlations}
 
 #Prepare hog farm data for correlation testing
@@ -270,106 +365,13 @@ axis.title.y = element_text(color="#292929", size=10, face="bold", family="mono"
 solarpov_plot2
 
 ```
-### Correlation Results
+### Summary & Conclusion
 
-We found that there is a significant presence of hog farms concentrated in counties with higher poverty levels  (p-value = 0.00472). However, the R-squared value is fairly small (0.1165), which indicates there are likely other variables at play that are associated with where hog farms are concentrated in North Carolina besides just poverty levels of the county. Additionally, there is a slight correlation between hog farm concentration and higher minority concentrations, but the p-value is not significant (0.21). 
+While our spatial analysis clearly indicate a concentration of hog farms in counties experiencing high poverty rates, we can run a regression analysis to test the statistical significance of this concentration. We found that there is a significant presence of hog farms concentrated in counties with higher poverty levels  (p-value = 0.00472). However, the R-squared value is fairly small (0.1165), which indicates there are likely other variables at play that are associated with where hog farms are concentrated in North Carolina besides just poverty levels of the county. Additionally, there is a slight correlation between hog farm concentration and higher minority concentrations, but the p-value is not significant (0.21). 
+
+
 
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
-```{r hog farm map, out.width = '100%'}
-
-##Convert hog farm data
-       
-hog_farms.sf  <- hog_farms %>% 
-  st_as_sf(coords = c('Longitude','Latitude'),
-           crs=4326)
-
-hog_farms.sf2 <- hog_farms.sf %>% drop_na(X)
-
-##Map Hog Farms
-
-##Add Counties Hog Farms
-qpal2 = colorNumeric( palette = "plasma", domain = counties_sf_join_converted$MinorityPerc, reverse = TRUE)
-qpal3 = colorNumeric( palette = "plasma", domain = counties_sf_join_converted$PovertyPerc, reverse = TRUE)
-qpal <- colorNumeric(palette = "plasma", domain = counties_sf_join_converted$PovertyPerc, reverse = TRUE)
-paltype <- colorFactor(
-   palette = "#ffe9e3",
-   domain = hog_farms.sf2$Type)
-
-# Minority Level and Hog Farms
-hog_farm_map1 <- leaflet() %>% 
-  addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
-              color="black",fillColor = ~qpal(MinorityPerc),weight = 1) %>%
-   addLegend("topright", data = hog_farms.sf2, pal=paltype, values=~Type,title="Farm Type") %>%
-    addProviderTiles("Esri.WorldGrayCanvas",
-        options = providerTileOptions(minZoom=6, maxZoom=14))  %>%
-    addLabelOnlyMarkers(data = hog_farms.sf2, label = ~Facility) %>%
-  addLegend("bottomright", data=counties_percent, values=~MinorityPerc*100,pal=qpal2,title="Percent Minority", labFormat = labelFormat(suffix = "%"), opacity = 1) %>%
-  addCircleMarkers(data = hog_farms.sf2, radius = 3, color = "black", stroke = TRUE, weight = 1, fillOpacity = 0.8, fillColor = "#ffe9e3")
-
-hog_farm_map1
-
-
-## Poverty Level and Hog Farms
-
-hog_farm_map_pov <- leaflet() %>% 
-  addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
-              color="black",fillColor = ~qpal3(PovertyPerc),weight = 1) %>%
-   addLegend("topright", data = hog_farms.sf2, pal=paltype, values=~Type,title="Farm Type") %>%
-    addProviderTiles("Esri.WorldGrayCanvas",
-        options = providerTileOptions(minZoom=6, maxZoom=14))  %>%
-    addLabelOnlyMarkers(data = hog_farms.sf2, label = ~Facility) %>%
-  addLegend("bottomright", data=counties_percent, values=~PovertyPerc*100,pal=qpal3,title="Percent in Poverty", labFormat = labelFormat(suffix = "%"), opacity = 1) %>%
-  addCircleMarkers(data = hog_farms.sf2, radius = 3, color = "black", stroke = TRUE, weight = 1, fillOpacity = 0.8, fillColor = "#ffe9e3")
-
-hog_farm_map_pov
-
-
-```
-
-```{r solar farm maps, out.width = '100%'}
-
-##Convert data to spatial
-       
-solar_plants_NC.sf  <- solar_plants_NC %>% 
-  st_as_sf(coords = c('Longitude','Latitude'),
-           crs=4326)
-
-##Map Solar Farms with County Demographics
-
-##Solar + Minority WIHTOUT HOG FARMS
-
-paltype_solar <- colorFactor(
-   palette = "#c9ffc7",
-   domain = solar_plants_NC.sf$Technology)
-
-solar_map1 <- leaflet() %>% 
-  addLegend(data = solar_plants_NC.sf, values=~Technology,pal=paltype_solar,title="Solar Farm Type" ) %>%
-  addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
-              color="black",fillColor = ~qpal(MinorityPerc),weight = 1) %>%
-    addProviderTiles("Esri.WorldGrayCanvas",
-        options = providerTileOptions(minZoom=6, maxZoom=14))  %>%
-addLegend("bottomright", data=counties_percent, values=~MinorityPerc*100,pal=qpal2,title="Percent Minority", labFormat = labelFormat(suffix = "%"), opacity = 1)  %>%
-  addCircleMarkers(data = solar_plants_NC.sf, radius = 3, color = "black", stroke = TRUE, weight = 1, fillOpacity = 0.8, fillColor = "#c9ffc7")
-
-solar_map1
-
-##Solar + POVERTY WIHTOUT HOG FARMS
-
-solar_map_pov <- leaflet() %>% 
-  addLegend(data = solar_plants_NC.sf, values=~Technology,pal=paltype_solar,title="Solar Farm Type" ) %>%
-  addPolygons(data =counties_percent, stroke = TRUE,opacity = 1,fillOpacity = 0.5, smoothFactor = 0.5,
-              color="black",fillColor = ~qpal3(PovertyPerc),weight = 1) %>%
-    addProviderTiles("Esri.WorldGrayCanvas",
-        options = providerTileOptions(minZoom=6, maxZoom=14))  %>%
-addLegend("bottomright", data=counties_percent, values=~PovertyPerc*100,pal=qpal3,title="Percent in Poverty", labFormat = labelFormat(suffix = "%"), opacity = 1)  %>%
-  addCircleMarkers(data = solar_plants_NC.sf, radius = 3, color = "black", stroke = TRUE, weight = 1, fillOpacity = 0.8, fillColor = "#c9ffc7")
-
-solar_map_pov
-
-
-```
-
 
 
