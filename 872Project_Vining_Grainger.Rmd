@@ -266,7 +266,7 @@ solarpov_plot2
 ```
 ### Correlation Results
 
-We found that there is a significant presence of hog farms concentrated in counties with higher poverty levels  (p-value = 0.00472). However, R-squared if fairly small (0.1165), which indicates there are likely other variables at play that are associated with where hog farms are concentrated in North Carolina. 
+We found that there is a significant presence of hog farms concentrated in counties with higher poverty levels  (p-value = 0.00472). However, R-squared if fairly small (0.1165), which indicates there are likely other variables at play that are associated with where hog farms are concentrated in North Carolina. Additionally, there is a slight correlation between hog farm concentration and higher minority concentrations, but the p-value is not significant (0.21).
 
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
