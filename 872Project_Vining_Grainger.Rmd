@@ -137,7 +137,69 @@ countymap_minority
 Hog_SVI_merge <- hog_farms %>%
   left_join(counties_percent, by = c("County" = "COUNTY") )
 
-#cor.test(Hog_SVI_merge$PovertyPerc, Hog_SVI_merge$)
+Hog_SVI_merge2 <- hog_farms %>%
+  group_by(County)
+
+Hog_SVI_merge2  <- aggregate(hog_farms$Type, by=list(hog_farms$County), FUN=length)
+colnames(Hog_SVI_merge2) <- c('County','Farms')
+
+#Merge again with SVI data
+Hog_SVI_cor <- Hog_SVI_merge2 %>%
+  left_join(counties_percent, by = c("County" = "COUNTY"))
+
+#Cor test Hog Farms
+
+cor.test(Hog_SVI_cor$PovertyPerc, Hog_SVI_cor$Farms)
+cor.test(Hog_SVI_cor$MinorityPerc, Hog_SVI_cor$Farms)
+summary(aov(Hog_SVI_cor$MinorityPerc ~ Hog_SVI_cor$Farms))
+summary(aov(Hog_SVI_cor$PovertyPerc ~ Hog_SVI_cor$Farms))
+
+## Poverty Corr & Hog Farms
+plothogpv <- lm(Farms~PovertyPerc,data=Hog_SVI_cor) 
+	summary(plothogpv)
+
+plothogpov <-	ggplot(Hog_SVI_cor, aes(x=PovertyPerc, y=Farms)) +
+              geom_point() +
+              geom_smooth(method=lm, se=FALSE) +
+              xlab("Percent Poverty Rate by County") + 
+              ylab("Number of Hog Farms") +
+              ggtitle("Correlation of Hog Farms & Poverty Levels by County in North Carolina")
+             
+
+hogplot1 <- plothogpov + theme(
+plot.title = element_text(color="#ba2b04", size=11, face="bold", family="mono"),
+axis.title.x = element_text(color="#292929", size=10, face="bold",  family="mono"),
+axis.title.y = element_text(color="#292929", size=10, face="bold", family="mono")
+)
+	
+hogplot1
+
+## Minority Corr & Hog Farms
+
+plothogmin <-	ggplot(Hog_SVI_cor, aes(x=MinorityPerc, y=Farms)) +
+              geom_point() +
+              geom_smooth(method=lm, se=FALSE)
+
+plothogmin <- lm(Farms~MinorityPerc,data=Hog_SVI_cor) 
+	summary(plothogpv)
+
+plothogmin <-	ggplot(Hog_SVI_cor, aes(x=MinorityPerc, y=Farms)) +
+              geom_point() +
+              geom_smooth(method=lm, se=FALSE) +
+              xlab("Percent Minority Concentration by County") + 
+              ylab("Number of Hog Farms") +
+              ggtitle("Correlation of Hog Farms & Minority Concentration by County in NC")
+             
+
+hogplot2 <- plothogmin + theme(
+plot.title = element_text(color="#ba2b04", size=11, face="bold", family="mono"),
+axis.title.x = element_text(color="#292929", size=10, face="bold",  family="mono"),
+axis.title.y = element_text(color="#292929", size=10, face="bold", family="mono")
+)
+	
+hogplot2
+	
+#Solar Farms Correlations
 
 Solar_SVI_merge <- solar_plants_NC %>%
   left_join(counties_percent, by = c("County" = "COUNTY"))
@@ -157,7 +219,55 @@ cor.test(Solar_SVI_merge$MinorityPerc, Solar_SVI_merge$`Nameplate Capacity (MW)`
 Solar_SVI_merge %>%
   group_by(County) %>%
   summarize(cor=cor(MinorityPerc, `Nameplate Capacity (MW)`))
+
+## Solar Plots
+## Minority Concentration & Solar Farms
+
+solarmin <- lm(`Nameplate Capacity (MW)`~MinorityPerc,data=Solar_SVI_merge) 
+	summary(solarmin)
+
+solarmin_plot <-	ggplot(Solar_SVI_merge, aes(x=MinorityPerc, y=`Nameplate Capacity (MW)`)) +
+              geom_point() +
+              geom_smooth(method=lm, se=FALSE) +
+              xlab("Percent Minority Concentration by County") + 
+              ylab("Number of Solar Farms") +
+              ggtitle("Correlation of Solar Farms & Minority Concentration by County in NC")
+             
+
+solarmin_plot2 <- solarmin_plot + theme(
+plot.title = element_text(color="#3cba6c", size=11, face="bold", family="mono"),
+axis.title.x = element_text(color="#292929", size=10, face="bold",  family="mono"),
+axis.title.y = element_text(color="#292929", size=10, face="bold", family="mono")
+)
+	
+solarmin_plot2
+
+## Poverty & Solar Farms
+
+solarpov <- lm(`Nameplate Capacity (MW)`~PovertyPerc,data=Solar_SVI_merge) 
+	summary(solarmin)
+
+solarpov_plot <-	ggplot(Solar_SVI_merge, aes(x=PovertyPerc, y=`Nameplate Capacity (MW)`)) +
+              geom_point() +
+              geom_smooth(method=lm, se=FALSE) +
+              xlab("Percent Poverty by County") + 
+              ylab("Number of Solar Farms") +
+              ggtitle("Correlation of Solar Farms & Poverty by County in NC")
+             
+
+solarpov_plot2 <- solarmin_plot + theme(
+plot.title = element_text(color="#3cba6c", size=11, face="bold", family="mono"),
+axis.title.x = element_text(color="#292929", size=10, face="bold",  family="mono"),
+axis.title.y = element_text(color="#292929", size=10, face="bold", family="mono")
+)
+	
+solarpov_plot2
+
 ```
+### Correlation Results
+
+We found that there is a significant presence of hog farms concentrated in counties with higher poverty levels  (p-value = 0.00472). However, R-squared if fairly small (0.1165), which indicates there are likely other variables at play that are associated with where hog farms are concentrated in North Carolina. 
+
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
