@@ -1,6 +1,6 @@
 ---
 title: "Project 872"
-author: "Rachael Grainger"
+author: "Rachael Grainger and Matthew Vining"
 date: "2022-11-19"
 output: html_document
 ---
@@ -10,11 +10,15 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+### Environmental Data Analysis of Hog Farm and Solar Farm Concentration in North Carolina
+## By: Rachael Grainger and Matthew Vining
+# Fall 2023
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+# Project Central Question:
+How do communities in North Carolina experience varying levels of environmental risks and benefits, with a particular lens on environmental justice communities?
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+# Potential Hypothesis:
+As the birthplace of the environmental justice movement, North Carolina is no stranger to environmental injustices. We expect that today Hog farms will still be correlated/concentrated in communities of higher social vulnerability (i.e., lower SES, predominantly nonwhite) across North Carolina. We also predict that energy systems, such as solar farms, will be concentrated in communities of lower social vulnerability (i.e., higher SES, predominately white) areas in North Carolina.
 
 ```{r include=FALSE}
 #Load Useful Packages for Project
