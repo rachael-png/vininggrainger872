@@ -53,24 +53,43 @@ File organization for the project focused on separating the project file and Rea
 
 <For each data file in the repository, describe the data contained in each column. Include the column name, a description of the information, the class of data, and any units associated with the data. Create a list or table for each data file.> 
 
-Animal Operations: 
-"X": X coordinate
-"Y": Y coordinate
-"FID": Number in the dataset. 
-"Permit": The farm permit number.
-"Permittee": The name of the person who applied and received a permit. 
-"Facility": The name of the farm facility. 
-"Type": The type of animal operation facility. This can be Swine (hog farms), Cattle, Poultry, or Animal Individual State.
-"Region": 
-"County": The county where the farm is located.
-"FirstIssue": When the very first permit was issued.
-"Issued": When the permit was issued/renewed.
-"Expries": When the permit expires
-"Status": Active or inactive farm.
-"Latitude": Latitude of the farm.
-"Longitude": Longitude of the farm.
+Animal Operations: This dataset contains the active animal permits for North Carolina animal farming operations. This data is from 2018 and has not been updated. 
 
-Counties Percent?:
+- X: X coordinate (num)
+- Y: Y coordinate (num)
+- FID: Number in the dataset. (chr)
+- Permit: The farm permit number. (chr)
+- Permittee: The name of the person who applied and received a permit. (chr)
+- Facility: The name of the farm facility. 
+- Type: The type of animal operation facility. This can be Swine (hog farms), Cattle, Poultry, or Animal Individual State. (chr)
+- Region: Larger category than county, that encompasses a specific region in North Carolina. (chr)
+- County: The county where the farm is located. (chr)
+- FirstIssue: When the very first permit was issued. (chr)
+- Issued: When the permit was issued/renewed. (chr)
+- Expires: When the permit expires. (chr)
+- Status: Active or inactive farm. (chr)
+- Latitude: Latitude of the farm. (num)
+- Longitude: Longitude of the farm. (num)
+
+Counties_Percent: This datafile contains spatial information for North Carolina counties as well as poverty and minority estimates for each county. 
+
+- STATEFP: (chr) State-level FIPS code.
+- COUNTYFP: (chr) County-level FIPS code
+- COUNTYNS: (chr) Unknown number associated with counties.
+- AFFGEOID: (chr) For creating shapes if converted to a shape file.
+- GEOID: (chr) For creating shapes if converted to a shape file.
+- NAME: (chr) Name of county. 
+- LSAD: (chr) Unknown number.
+- ALAND: (num) Area of land.
+- AWATER: (num) Area of water.
+- COUNTY: (chr) County name.
+- LOCATION: (chr) Text description of tract, county, state.
+- E_TOTPOP: (num) Estimate of the total population by county.
+- E_POV: (num) Estimate of the total population in poverty by county.
+- E_MINRTY: (num) Estimate of the total population that is nonwhite by county.
+- geometry: (list) Spatial coordinates. 
+- PovertyPerc: (num) Estimate of the total percent population in poverty by county.
+- MinorityPerc: (num) Estimate of the total percent population that is nonwhite by county.
 
 Solar_Plants_NC: this file was combined with all plant data and solar data file for the useable data needed for the project. It contains the following column variables:
 
@@ -94,11 +113,22 @@ Solar_Plants_NC: this file was combined with all plant data and solar data file 
 
 
 
-
 ## Scripts and code
 
 <list any software scripts/code contained in the repository and a description of their purpose.>
-#what does this mean??
+
+Packages used:
+dplyr - Tools for Splitting, Applying and Combining Data
+plyr - Tools for Splitting, Applying and Combining Data
+lubridate - For changing and assigning dates, if needed.
+tidyverse - For data manipulation.
+sf - For changing data into spatial formats for spatial analysis and mapping.
+mapview - For quickly viewing maps/spatial data, if needed.
+RColorBrewer - for creating color palettes
+readxl - for reading excel data formats.
+leaflet - for creating our maps.
+viridis - for assigning map colors.
+
 
 ## Quality assurance/quality control
 To ensure quality of data, data files were downloaded from government or academic based sources only. All of our data was either census or government department based and published on a safe and secure network. Whend data was loaded into R, each file was looked at to ensure the class of data was correct, numeric vs character. When converting data to a shapefile or using coordinates, we also made sure to align coordinate systems for data from different sources to ensure they were being mapped correctly. 
