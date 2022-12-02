@@ -50,8 +50,9 @@ solar_data <- read_excel("Project folder/Raw Data/solar_data.xlsx")
 #filter solar plant data by county and select useful columns
 solar_plants_NC <- left_join(solar_data, allplant_data)
 solar_plants_NC <- solar_plants_NC %>%
-  select(`Utility ID`:`Winter Capacity (MW)`, `Street Address`:Longitude) %>%
+  select(`Utility ID`:Technology, `Nameplate Capacity (MW)`:`Winter Capacity (MW)`, `Street Address`:Longitude) %>%
   group_by(County)
+
 
 #filter animal farm data for hog farms only and group by county
 library(dplyr)
