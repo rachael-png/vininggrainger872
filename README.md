@@ -53,7 +53,22 @@ File organization for the project focused on separating the project file and Rea
 
 <For each data file in the repository, describe the data contained in each column. Include the column name, a description of the information, the class of data, and any units associated with the data. Create a list or table for each data file.> 
 
-Animal Operations:
+Animal Operations: 
+"X": X coordinate
+"Y": Y coordinate
+"FID": Number in the dataset. 
+"Permit": The farm permit number.
+"Permittee": The name of the person who applied and received a permit. 
+"Facility": The name of the farm facility. 
+"Type": The type of animal operation facility. This can be Swine (hog farms), Cattle, Poultry, or Animal Individual State.
+"Region": 
+"County": The county where the farm is located.
+"FirstIssue": When the very first permit was issued.
+"Issued": When the permit was issued/renewed.
+"Expries": When the permit expires
+"Status": Active or inactive farm.
+"Latitude": Latitude of the farm.
+"Longitude": Longitude of the farm.
 
 Counties Percent?:
 
