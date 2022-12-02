@@ -51,7 +51,6 @@ File organization for the project focused on separating the project file and Rea
 
 ## Metadata
 
-<For each data file in the repository, describe the data contained in each column. Include the column name, a description of the information, the class of data, and any units associated with the data. Create a list or table for each data file.> 
 
 Animal Operations: This dataset contains the active animal permits for North Carolina animal farming operations. This data is from 2018 and has not been updated. 
 
@@ -114,8 +113,6 @@ Solar_Plants_NC: this file was combined with all plant data and solar data file 
 
 
 ## Scripts and code
-
-<list any software scripts/code contained in the repository and a description of their purpose.>
 
 Packages used:
 dplyr - Tools for Splitting, Applying and Combining Data
