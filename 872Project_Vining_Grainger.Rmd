@@ -2,7 +2,9 @@
 title: "Project 872"
 author: "Rachael Grainger and Matthew Vining"
 date: "2022-11-19"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -12,14 +14,11 @@ knitr::opts_chunk$set(echo = TRUE)
 #GITHUB LINK: https://github.com/rachael-png/vininggrainger872
 ```
 
-### Environmental Data Analysis of Hog Farm and Solar Farm Concentration in North Carolina
-## By: Rachael Grainger and Matthew Vining
-# Fall 2023
-
-# Project Central Question:
+## Environmental Data Analysis of Hog Farm and Solar Farm Concentration in North Carolina
+## Project Central Question:
 How do communities in North Carolina experience varying levels of environmental risks and benefits, with a particular lens on environmental justice communities?
 
-# Potential Hypothesis:
+## Potential Hypothesis:
 As the birthplace of the environmental justice movement, North Carolina is no stranger to environmental injustices. We expect that today Hog farms will still be correlated/concentrated in communities of higher social vulnerability (i.e., lower SES, predominantly nonwhite) across North Carolina. We also predict that energy systems, such as solar farms, will be concentrated in communities of lower social vulnerability (i.e., higher SES, predominately white) areas in North Carolina.
 
 ```{r include=FALSE}
@@ -61,7 +60,7 @@ hog_farms <- Animal_Operations %>%
 
 ```
 
-## Social Vulnerability Index
+### Social Vulnerability Index
 
 CDC's Social Vulnerability Index data will be used to compare areas in North Carolina. 
 Social Vulnerability Data: - <https://www.atsdr.cdc.gov/placeandhealth/svi/documentation/SVI_documentation_2018.html> - <https://www.atsdr.cdc.gov/placeandhealth/svi/documentation/pdf/SVI2018Documentation-H.pdf>
@@ -95,9 +94,6 @@ counties_sf_join <-  merge(x = counties_sf,
 counties_sf_join <- counties_sf %>% 
   left_join(svi2018_nc_raw, by = c("GEOID" = "FIPS") )
 
-
-
-#View with mapview
 library(leaflet)
 counties_sf_join_converted <- st_transform(counties_sf_join, c=4326)
 
@@ -370,7 +366,8 @@ axis.title.y = element_text(color="#292929", size=10, face="bold", family="mono"
 solarpov_plot2
 
 ```
-### Summary & Conclusion
+
+## Summary & Conclusion
 
 While our spatial analysis clearly indicates a concentration of hog farms in counties experiencing high poverty rates, we can decided to run a correlation and regression analysis to test the statistical significance of this concentration. We found that there is a significant presence of hog farms concentrated in counties with higher poverty levels  (p-value = 0.00472). However, the R-squared value is fairly small (0.1165), which indicates there are likely other variables at play that are associated with where hog farms are concentrated in North Carolina besides just poverty levels of the county. Additionally, there is a slight correlation between hog farm concentration and higher minority concentrations, but the p-value is not significant (0.21). 
 
